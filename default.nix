@@ -3,13 +3,23 @@
 with { overlay = _: pkgs: { niv = import sources.niv {}; }; };
 
 let
+    cabal2nixOverlay = self: super: {
+      haskellPackages = super.haskellPackages.override (old: {
+        overrides = pkgs.lib.composeExtensions old.overrides (self: hspkgs: {
+          tls = pkgs.haskell.lib.dontCheck hspkgs.tls;
+        });
+      });
+    };
+
     # We use a nixpkgs version with modified configuration to build static
     # executables. From https://github.com/nh2/static-haskell-nix
     pkgs = (import (sources.nixpkgs-static + "/survey/default.nix") {
       # This is the nixpkgs revision we are modifying.
       # We pinned the revision with 'niv add NixOS/nixpkgs -a rev=<sha256>
       normalPkgs = import sources.nixpkgs {};
-    }).pkgs;
+      approach = "pkgsMusl";
+      integer-simple = true;
+    }).pkgs.pkgsMusl.appendOverlays [cabal2nixOverlay];
 
     # Nix usually takes all files in the source directory into consideration and
     # busts the package cache whenever any of these files change. To avoid that
