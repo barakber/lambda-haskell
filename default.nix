@@ -52,6 +52,7 @@ let
       '';
 in
 { inherit
+    pkgs
     lambda-test
     function-zip ;
 }

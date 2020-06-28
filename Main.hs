@@ -3,6 +3,7 @@
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell #-}
 
 module Main where
 
@@ -16,7 +17,31 @@ import Data.Text (Text)
 import Data.Text.Lazy (toStrict)
 import Data.Text.Lazy.Encoding (decodeUtf8)
 import Network.HTTP.Types.Header
+--
+import Data.Default
+import Control.Lens hiding (Context)
+import Control.Monad.IO.Class
+import Control.Monad.Free
+import Data.Attoparsec
+--
 
+
+{-# LANGUAGE TemplateHaskell #-}
+import Development.GitRev
+
+panic :: String -> a
+panic msg = error panicMsg
+  where panicMsg =
+          concat [ "[panic ", $(gitBranch), "@", $(gitHash)
+                 , " (", $(gitCommitDate), ")"
+                 , " (", $(gitCommitCount), " commits in HEAD)"
+                 , dirty, "] ", msg ]
+        dirty | $(gitDirty) = " (uncommitted files present)"
+              | otherwise   = ""
+
+main = panic "oh no!"
+
+{-
 main :: IO ()
 main =  runLambda run
   where
@@ -38,3 +63,5 @@ handler :: Request -> Context -> IO (Either String Response)
 handler e context = return
     $ Right
     $ Response 200 mempty (toStrict $ decodeUtf8 $ encodePretty e) False
+    
+-}

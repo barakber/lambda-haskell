@@ -10,7 +10,17 @@ executable lambda-test
       base
     , aeson
     , aeson-pretty
+    , data-default
+    , lens
+    , process
+    , mtl
+    , free
     , text
+    , template-haskell
+    , attoparsec
+    , conduit
+    , resourcet
+    , gitrev
     , aws-lambda-haskell-runtime >= 2.0.1 && < 3.0.0
     , http-types
   default-language:    Haskell2010
