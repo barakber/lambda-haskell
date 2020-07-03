@@ -57,6 +57,9 @@ let
       name = "lambda-test-docker";
       tag  = "latest";
       contents = [lambda-test];
+      config = {
+        Cmd = [ "${lambda-test}/bin/lambda-test" ];
+      };
     };
 in
 { inherit
