@@ -50,9 +50,17 @@ let
           cp ${lambda-test}/bin/lambda-test bootstrap
           zip $out/function.zip bootstrap
       '';
+
+    # Create a Docker image (use local nixpkgs)
+    pkgs' = import <nixpkgs> {};
+    docker-image = pkgs'.dockerTools.buildImage {
+      name = "lambda-test-docker";
+      tag  = "latest";
+      contents = [lambda-test];
+    };
 in
 { inherit
-    pkgs
     lambda-test
-    function-zip ;
+    function-zip
+    docker-image ;
 }
